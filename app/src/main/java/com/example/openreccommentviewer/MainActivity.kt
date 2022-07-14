@@ -67,6 +67,19 @@ fun GetCommentButton() {
         ) {
             Text(text = "Disconnect")
         }
+
+        Button(
+            onClick = {
+                scope.launch(Dispatchers.Default) {
+                    val client = HttpClient().getHtmlBody()
+                    withContext(Dispatchers.Default) {
+                        println(client)
+                    }
+                }
+            },
+        ) {
+            Text(text = "Get HTML body")
+        }
     }
 }
 
