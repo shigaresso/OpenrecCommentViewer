@@ -3,13 +3,13 @@ package com.example.openreccommentviewer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.openreccommentviewer.ui.theme.OpenrecCommentViewerTheme
@@ -39,18 +39,31 @@ class MainActivity : ComponentActivity() {
 fun GetCommentButton() {
     // Compose でコルーチンを使うため
     val scope = rememberCoroutineScope()
-
-    Button(onClick = {
-        scope.launch(Dispatchers.IO) {
-            val client = WebSocketClient()
-            while (true) {
-                client.send()
-                println("25秒休みます: ${LocalDateTime.now()}")
-                delay(25000)
-            }
+    var isConnecting by remember { mutableStateOf(false) }
+    Column {
+        Button(
+            enabled = !isConnecting,
+            onClick = {
+                isConnecting = true
+                scope.launch(Dispatchers.IO) {
+                    val client = WebSocketClient()
+                    while (isConnecting) {
+                        client.send()
+                        println("25秒休みます: ${LocalDateTime.now()}")
+                        delay(25000)
+                    }
+                }
+            },
+        ) {
+            Text(text = "Get Comment")
         }
-    }) {
-        Text(text = "Get Comment")
+
+        Button(
+            enabled = isConnecting,
+            onClick = { isConnecting = false },
+        ) {
+            Text(text = "Disconnect")
+        }
     }
 }
 
