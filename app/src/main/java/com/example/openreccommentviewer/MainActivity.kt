@@ -16,6 +16,7 @@ import com.example.openreccommentviewer.ui.theme.OpenrecCommentViewerTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 
 class MainActivity : ComponentActivity() {
@@ -49,8 +50,10 @@ fun GetCommentButton() {
                     val client = WebSocketClient()
                     while (isConnecting) {
                         client.send()
-                        println("25秒休みます: ${LocalDateTime.now()}")
-                        delay(25000)
+                        withContext(Dispatchers.Default) {
+                            println("25秒休みます: ${LocalDateTime.now()}")
+                            delay(25000)
+                        }
                     }
                 }
             },
@@ -64,6 +67,12 @@ fun GetCommentButton() {
         ) {
             Text(text = "Disconnect")
         }
+    }
+}
+
+suspend fun sleep() {
+    withContext(Dispatchers.Default) {
+
     }
 }
 

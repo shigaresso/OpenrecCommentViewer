@@ -1,5 +1,7 @@
 package com.example.openreccommentviewer
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
@@ -19,8 +21,10 @@ class WebSocketClient : WebSocketListener() {
         ws = client.newWebSocket(request, this)
     }
 
-    fun send() {
-        ws.send("2")
+    suspend fun send() {
+        withContext(Dispatchers.IO) {
+            ws.send("2")
+        }
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
