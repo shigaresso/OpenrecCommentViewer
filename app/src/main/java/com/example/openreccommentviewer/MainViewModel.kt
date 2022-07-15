@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.time.LocalDateTime
 
 class MainViewModel : ViewModel() {
@@ -17,14 +19,27 @@ class MainViewModel : ViewModel() {
     private val _isConnecting = MutableStateFlow(false)
     val isConnecting: StateFlow<Boolean> = _isConnecting.asStateFlow()
 
+    var commentData: StateFlow<String> = MutableStateFlow("まだコメントを受け取っていません")
+
     fun changeIsConnect() {
         _isConnecting.value = !_isConnecting.value
+    }
+
+    private fun startGetComment(movieId: String, listener: WebSocketClient): StateFlow<String> {
+        val httpClient = OkHttpClient()
+        val request = Request.Builder()
+            .url("wss://chat.openrec.tv/socket.io/?movieId=$movieId&EIO=3&transport=websocket")
+            .build()
+
+        val webSocket = httpClient.newWebSocket(request, listener)
+        listener.ws = webSocket
+        return listener.commentData
     }
 
     fun connectLiveStream() {
         viewModelScope.launch {
             val liveHtmlBody = httpClient.getHtmlBody(
-                urlString = "https://www.openrec.tv/live/n9ze7g7o5r4"
+                urlString = "https://www.openrec.tv/live/em8xg5gmvr2"
             )
             val userId = extractString(
                 targetValue = liveHtmlBody,
@@ -38,7 +53,10 @@ class MainViewModel : ViewModel() {
                 extractPattern = """movie_id":([0-9]+)"""
             )
             changeIsConnect()
-            val client = WebSocketClient(movieId)
+            val client = WebSocketClient()
+            withContext(Dispatchers.IO) {
+                commentData = startGetComment(movieId, client)
+            }
             while (_isConnecting.value) {
                 client.send()
                 withContext(Dispatchers.Default) {
