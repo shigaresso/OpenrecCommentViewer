@@ -1,7 +1,12 @@
 package com.example.openreccommentviewer
 
-fun extractString(targetValue: String, extractPattern: String): String {
-    val regex = extractPattern.toRegex()
-    val match = regex.find(targetValue)
-    return match!!.groups[1]!!.value
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+suspend fun extractString(targetValue: String, extractPattern: String): String {
+    return withContext(Dispatchers.Default) {
+        val regex = extractPattern.toRegex()
+        val match = regex.find(targetValue)
+        return@withContext match!!.groups[1]!!.value
+    }
 }
