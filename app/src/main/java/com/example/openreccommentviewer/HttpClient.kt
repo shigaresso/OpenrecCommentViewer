@@ -7,9 +7,9 @@ import java.io.IOException
 
 class HttpClient(private val client: OkHttpClient = OkHttpClient()) {
 
-    suspend fun getHtmlBody(): String {
+    suspend fun getHtmlBody(urlString: String): String {
         val request = Request.Builder()
-            .url("https://www.openrec.tv/live/o7z4e2x2q8l")
+            .url(urlString)
             .build()
 
         return withContext(Dispatchers.IO) {
