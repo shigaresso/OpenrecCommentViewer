@@ -5,22 +5,16 @@ import kotlinx.coroutines.withContext
 import okhttp3.*
 import java.io.IOException
 
-class HttpClient {
-    private val client = OkHttpClient()
+class HttpClient(private val client: OkHttpClient = OkHttpClient()) {
 
     suspend fun getHtmlBody(): String {
         val request = Request.Builder()
-            .url("https://www.openrec.tv/live/lv816kd7yz9")
+            .url("https://www.openrec.tv/live/o7z4e2x2q8l")
             .build()
 
         return withContext(Dispatchers.IO) {
             val response = client.newCall(request).execute()
             return@withContext response.body?.string().orEmpty()
         }
-    }
-
-    fun getHtml() {
-        val liveUrl = ""
-
     }
 }
