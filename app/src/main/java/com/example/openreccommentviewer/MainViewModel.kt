@@ -14,14 +14,14 @@ import java.time.LocalDateTime
 class MainViewModel : ViewModel() {
     private val httpClient = HttpClient()
 
-    private val _isConnect: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isConnect: StateFlow<Boolean> = _isConnect.asStateFlow()
+    private val _isConnecting = MutableStateFlow(false)
+    val isConnecting: StateFlow<Boolean> = _isConnecting.asStateFlow()
 
-    private fun changeIsConnect() {
-        _isConnect.value = !_isConnect.value
+    fun changeIsConnect() {
+        _isConnecting.value = !_isConnecting.value
     }
 
-    suspend fun connectLiveStream() {
+    fun connectLiveStream() {
         viewModelScope.launch {
             val liveHtmlBody = httpClient.getHtmlBody(
                 urlString = "https://www.openrec.tv/live/n9ze7g7o5r4"
@@ -37,11 +37,9 @@ class MainViewModel : ViewModel() {
                 targetValue = apiHtmlBody,
                 extractPattern = """movie_id":([0-9]+)"""
             )
-            println("押す前：${_isConnect.value}")
             changeIsConnect()
-            println("押した後：${_isConnect.value}")
             val client = WebSocketClient(movieId)
-            while (_isConnect.value) {
+            while (_isConnecting.value) {
                 client.send()
                 withContext(Dispatchers.Default) {
                     println("25秒休みます: ${LocalDateTime.now()}")
