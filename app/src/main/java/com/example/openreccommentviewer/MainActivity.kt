@@ -47,7 +47,24 @@ fun GetCommentButton() {
             onClick = {
                 isConnecting = true
                 scope.launch(Dispatchers.IO) {
-                    val client = WebSocketClient()
+                    val httpClient = HttpClient()
+                    val liveHtmlBody = httpClient.getHtmlBody(
+                        urlString = "https://www.openrec.tv/live/1o8qy6ld1zk"
+                    )
+                    val userId = withContext(Dispatchers.Default) {
+                        return@withContext extractString(
+                            targetValue = liveHtmlBody,
+                            extractPattern = """"channel":\{"user":\{"id":"(.+?)""""
+                        )
+                    }
+                    val apiHtmlBody = httpClient.getHtmlBody(
+                        urlString = "https://public.openrec.tv/external/api/v5/movies?channel_ids=$userId&sort=onair_status&is_upload=false"
+                    )
+                    val movieId = extractString(
+                            targetValue = apiHtmlBody,
+                            extractPattern = """movie_id":([0-9]+)"""
+                        )
+                    val client = WebSocketClient(movieId)
                     while (isConnecting) {
                         client.send()
                         withContext(Dispatchers.Default) {
@@ -68,18 +85,6 @@ fun GetCommentButton() {
             Text(text = "Disconnect")
         }
 
-        Button(
-            onClick = {
-                scope.launch(Dispatchers.Default) {
-                    val client = HttpClient().getHtmlBody()
-                    withContext(Dispatchers.Default) {
-                        println(client)
-                    }
-                }
-            },
-        ) {
-            Text(text = "Get HTML body")
-        }
     }
 }
 
