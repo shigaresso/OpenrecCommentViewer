@@ -35,6 +35,7 @@ class MainActivity : ComponentActivity() {
 fun GetCommentButton(viewModel: MainViewModel = MainViewModel()) {
 
     val isConnecting by viewModel.isConnecting.collectAsState()
+    val commentData by viewModel.commentData.collectAsState()
 
     Column {
         Button(
@@ -51,6 +52,7 @@ fun GetCommentButton(viewModel: MainViewModel = MainViewModel()) {
             Text(text = "Disconnect")
         }
 
+        Text(text = commentData)
     }
 }
 
