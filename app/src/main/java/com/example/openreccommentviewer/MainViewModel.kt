@@ -17,7 +17,7 @@ class MainViewModel : ViewModel() {
     private val _isConnecting = MutableStateFlow(false)
     val isConnecting: StateFlow<Boolean> = _isConnecting.asStateFlow()
 
-    var commentData: StateFlow<String> = MutableStateFlow("まだコメントを受け取っていません")
+    var commentData: StateFlow<Comment> = MutableStateFlow(Comment(null, "", 0))
 
     fun changeIsConnect() {
         _isConnecting.value = !_isConnecting.value
@@ -27,7 +27,7 @@ class MainViewModel : ViewModel() {
     fun connectLiveStream() {
         viewModelScope.launch {
             val liveHtmlBody = httpClient.getHtmlBody(
-                urlString = "https://www.openrec.tv/live/2k8mk72g2r6"
+                urlString = "https://www.openrec.tv/live/12rok1jnn8n"
             )
             val userId = extractString(
                 targetValue = liveHtmlBody,

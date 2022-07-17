@@ -52,7 +52,7 @@ fun GetCommentButton(viewModel: MainViewModel = MainViewModel()) {
             Text(text = "Disconnect")
         }
 
-        Text(text = commentData)
+        Text(text = commentData.data?.user_name ?: "ユーザ名がありませんでした")
     }
 }
 
