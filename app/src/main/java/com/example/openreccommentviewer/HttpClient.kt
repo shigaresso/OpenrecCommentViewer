@@ -3,7 +3,6 @@ package com.example.openreccommentviewer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.*
-import java.io.IOException
 
 class HttpClient(private val client: OkHttpClient = OkHttpClient()) {
 
