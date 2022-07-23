@@ -17,12 +17,13 @@ class MainViewModel : ViewModel() {
 
     val isConnecting: StateFlow<Boolean> = webSocketClient.isConnecting
 
-    var commentData: StateFlow<Comment> = MutableStateFlow(Comment(null, "", 0))
+    var commentData = webSocketClient.commentData
 
+    // TODO WebSocket 通信を切断した時、サーバーにこちらから通信して 25 秒以上経過してないうちに再接続すると delay が複数回起こるようになってしまう
     fun connectLiveStream() {
         viewModelScope.launch {
             val liveHtmlBody = httpClient.getHtmlBody(
-                urlString = "https://www.openrec.tv/live/mlrl7ly3pzg"
+                urlString = "https://www.openrec.tv/live/n9ze7gnq1r4"
             )
             val userId = extractString(
                 targetValue = liveHtmlBody,
@@ -48,6 +49,10 @@ class MainViewModel : ViewModel() {
     }
 
     fun disconnectLiveStream() {
+        viewModelScope.launch {
+            delay(25000)
+        }
         webSocketClient.disConnect()
+        webSocketClient = WebSocketClient()
     }
 }

@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -52,7 +54,14 @@ fun GetCommentButton(viewModel: MainViewModel = MainViewModel()) {
             Text(text = "Disconnect")
         }
 
-        Text(text = commentData.data?.user_name ?: "ユーザ名がありませんでした")
+        if (commentData.isNotEmpty()) {
+            LazyColumn {
+                items(commentData) { comment ->
+                    Text(text = comment.data?.message.toString())
+                }
+            }
+//            Text(text = commentData.last().data?.message.toString())
+        }
     }
 }
 

@@ -15,8 +15,8 @@ import okhttp3.WebSocketListener
 class WebSocketClient() : WebSocketListener() {
     private lateinit var ws: WebSocket
 
-    private val _commentData = MutableStateFlow(Comment(null, "", 0))
-    val commentData: StateFlow<Comment> = _commentData
+    private val _commentData = MutableStateFlow<List<Comment>>(emptyList())
+    val commentData: StateFlow<List<Comment>> = _commentData
 
     private val _isConnecting = MutableStateFlow(false)
     val isConnecting: StateFlow<Boolean> = _isConnecting
@@ -43,21 +43,26 @@ class WebSocketClient() : WebSocketListener() {
 
     private fun outputData(text: String) {
         when (text.substring(0, 1)) {
+            "3" -> print(text)
             // 最初の 1 文字が 4 以外は視聴者のコメントではない
             "4" -> {
                 when (text.substring(0, 2)) {
                     // substring は JSON に不要な部分を削除している
                     "42" -> {
-                        val comment = text.substring(14, text.length - 2).replace("\\", "")
-                        println(comment)
-                        val json = Gson().fromJson(comment, Comment::class.java)
-                        println("JSONは $json")
-                        _commentData.value = json
+                        if (text.substring(24, 25) == "0") {
+                            val comment = text.substring(14, text.length - 2).replace("\\", "")
+                            println(comment)
+                            val json = Gson().fromJson(comment, Comment::class.java)
+                            println("JSONは $json")
+                            _commentData.value += json
+                        }
                     }
                 }
             }
         }
     }
+
+    // 配信から抜けてブラウザバックする時は 41 をブラウザ側から送ってるっぽい
 
     suspend fun send() {
         withContext(Dispatchers.IO) {
