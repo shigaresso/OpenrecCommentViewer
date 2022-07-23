@@ -47,7 +47,7 @@ fun GetCommentButton(viewModel: MainViewModel = MainViewModel()) {
 
         Button(
             enabled = isConnecting,
-            onClick = { viewModel.changeIsConnect() },
+            onClick = { viewModel.disconnectLiveStream() },
         ) {
             Text(text = "Disconnect")
         }

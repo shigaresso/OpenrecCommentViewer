@@ -13,21 +13,16 @@ import java.time.LocalDateTime
 
 class MainViewModel : ViewModel() {
     private val httpClient = HttpClient()
+    private var webSocketClient = WebSocketClient()
 
-    private val _isConnecting = MutableStateFlow(false)
-    val isConnecting: StateFlow<Boolean> = _isConnecting.asStateFlow()
+    val isConnecting: StateFlow<Boolean> = webSocketClient.isConnecting
 
     var commentData: StateFlow<Comment> = MutableStateFlow(Comment(null, "", 0))
-
-    fun changeIsConnect() {
-        _isConnecting.value = !_isConnecting.value
-    }
-
 
     fun connectLiveStream() {
         viewModelScope.launch {
             val liveHtmlBody = httpClient.getHtmlBody(
-                urlString = "https://www.openrec.tv/live/12rok1jnn8n"
+                urlString = "https://www.openrec.tv/live/mlrl7ly3pzg"
             )
             val userId = extractString(
                 targetValue = liveHtmlBody,
@@ -40,17 +35,19 @@ class MainViewModel : ViewModel() {
                 targetValue = apiHtmlBody,
                 extractPattern = """movie_id":([0-9]+)"""
             )
-            changeIsConnect()
-            val client = WebSocketClient(movieId)
-            commentData = client.commentData
-            while (_isConnecting.value) {
-                client.send()
+            webSocketClient.connectWebsocketServer(movieId)
+            commentData = webSocketClient.commentData
+            while (webSocketClient.isConnecting.value) {
+                webSocketClient.send()
                 withContext(Dispatchers.Default) {
                     println("25秒休みます: ${LocalDateTime.now()}")
                     delay(25000)
                 }
             }
-            client.disConnect()
         }
+    }
+
+    fun disconnectLiveStream() {
+        webSocketClient.disConnect()
     }
 }
