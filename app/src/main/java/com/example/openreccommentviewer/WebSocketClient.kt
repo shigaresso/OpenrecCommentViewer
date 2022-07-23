@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -12,7 +11,7 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
 // OkHttp3 を用いて WebSocket 接続を使うには継承が必要
-class WebSocketClient() : WebSocketListener() {
+class WebSocketClient : WebSocketListener() {
     private lateinit var ws: WebSocket
 
     private val _commentData = MutableStateFlow<List<Comment>>(emptyList())
