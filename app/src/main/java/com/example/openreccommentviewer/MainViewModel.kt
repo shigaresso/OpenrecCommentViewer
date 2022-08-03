@@ -2,11 +2,8 @@ package com.example.openreccommentviewer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 
 class MainViewModel : ViewModel() {
@@ -17,11 +14,13 @@ class MainViewModel : ViewModel() {
 
     var commentData = webSocketClient.commentData
 
-    // TODO WebSocket 通信を切断した時、サーバーにこちらから通信して 25 秒以上経過してないうちに再接続すると delay が複数回起こるようになってしまう
+    // 25 秒後にコメントサーバーに接続状態だと知らせるコルーチン用変数
+    private var _connectJob: Job? = null
+
     fun connectLiveStream() {
         viewModelScope.launch {
             val liveHtmlBody = httpClient.getHtmlBody(
-                urlString = "https://www.openrec.tv/live/n9ze7gnq1r4"
+                urlString = "https://www.openrec.tv/live/pnzg6w6wvry"
             )
             val userId = extractString(
                 targetValue = liveHtmlBody,
@@ -40,17 +39,17 @@ class MainViewModel : ViewModel() {
                 webSocketClient.send()
                 withContext(Dispatchers.Default) {
                     println("25秒休みます: ${LocalDateTime.now()}")
-                    delay(25000)
+                    _connectJob = launch {
+                        delay(25000)
+                    }
                 }
             }
         }
     }
 
     fun disconnectLiveStream() {
-        viewModelScope.launch {
-            delay(25000)
-        }
+        _connectJob?.cancel()
+        _connectJob = null
         webSocketClient.disConnect()
-        webSocketClient = WebSocketClient()
     }
 }
