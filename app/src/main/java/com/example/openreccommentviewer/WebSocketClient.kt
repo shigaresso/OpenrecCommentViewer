@@ -25,6 +25,7 @@ class WebSocketClient : WebSocketListener() {
     }
 
     fun connectWebsocketServer(movieId: String) {
+        _commentData.value = emptyList()
         val okHttpClient = OkHttpClient()
         val request = Request.Builder()
             .url("wss://chat.openrec.tv/socket.io/?movieId=$movieId&EIO=3&transport=websocket")
