@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.openreccommentviewer.component.CommentItem
 import com.example.openreccommentviewer.ui.theme.OpenrecCommentViewerTheme
 
 class MainActivity : ComponentActivity() {
@@ -57,7 +58,9 @@ fun GetCommentButton(viewModel: MainViewModel = MainViewModel()) {
         if (commentData.isNotEmpty()) {
             LazyColumn {
                 items(commentData) { comment ->
-                    Text(text = comment.data?.message.toString())
+                    CommentItem(comment.data)
+//                    Text(text = comment.data?.message.toString())
+//                    Text(text = comment.data?.user_name.toString())
                 }
             }
 //            Text(text = commentData.last().data?.message.toString())
