@@ -20,7 +20,7 @@ class MainViewModel : ViewModel() {
     fun connectLiveStream() {
         viewModelScope.launch {
             val liveHtmlBody = httpClient.getHtmlBody(
-                urlString = "https://www.openrec.tv/live/pnzg6w6wvry"
+                urlString = "https://www.openrec.tv/live/p2zj7mgxdzw"
             )
             val userId = extractString(
                 targetValue = liveHtmlBody,
@@ -51,5 +51,10 @@ class MainViewModel : ViewModel() {
         _connectJob?.cancel()
         _connectJob = null
         webSocketClient.disConnect()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        _connectJob?.cancel()
     }
 }
