@@ -1,18 +1,21 @@
 package com.example.openreccommentviewer
 
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
 
 class RegexExtractKtTest {
     @Test
     fun extractUserId() {
-        // act
-        val actual = extractString(
-            targetValue = "eCount\":-1}],\"channel\":{\"user\":{\"id\":\"sumomo_xqx\",\"userKey\"",
-            extractPattern = """"channel":\{"user":\{"id":"(.+?)"""",
-        )
-        // assert
-        assertEquals("sumomo_xqx", actual)
+        runBlocking {
+            // act
+            val actual = extractString(
+                targetValue = "eCount\":-1}],\"channel\":{\"user\":{\"id\":\"sumomo_xqx\",\"userKey\"",
+                extractPattern = """"channel":\{"user":\{"id":"(.+?)"""",
+            )
+            // assert
+            assertEquals("sumomo_xqx", actual)
+        }
     }
 
     @Test
@@ -26,12 +29,14 @@ class RegexExtractKtTest {
                 }
             ]
         """
-        // act
-        val actual = extractString(
-            targetValue = target,
-            extractPattern = """movie_id":([0-9]+)""",
-        )
-        // assert
-        assertEquals("2713650", actual)
+        runBlocking {
+            // act
+            val actual = extractString(
+                targetValue = target,
+                extractPattern = """movie_id":([0-9]+)""",
+            )
+            // assert
+            assertEquals("2713650", actual)
+        }
     }
 }
